@@ -1,4 +1,4 @@
-# ICAN Student Success App
+# Student Success App
 
 A mobile application to help students plan their academic and career journey, built with React Native and Firebase.
 
