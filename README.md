@@ -1,4 +1,4 @@
-# Student Success App
+# Student App
 
 A mobile application to help students plan their academic and career journey, built with React Native and Firebase.
 
