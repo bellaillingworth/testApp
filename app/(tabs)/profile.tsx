@@ -7,11 +7,15 @@ import { Alert, Image, Pressable, ScrollView, StyleSheet, TextInput } from 'reac
 import { checklists } from './explore';
 
 type GradeLevel = '9th' | '10th' | '11th' | '12th';
+type UserRole = 'Student' | 'Parent' | 'Teacher';
+type CollegePlan = '2-year college' | '4-year college' | 'Not decided';
 
 type UserData = {
   name: string;
   email: string;
   grade: GradeLevel;
+  role: UserRole;
+  collegePlan?: CollegePlan;
 };
 
 export default function ProfileScreen() {
@@ -20,6 +24,7 @@ export default function ProfileScreen() {
     name: '',
     email: '',
     grade: '9th',
+    role: 'Student',
   });
   const [originalGrade, setOriginalGrade] = useState<GradeLevel>('9th');
 
@@ -73,17 +78,17 @@ export default function ProfileScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <Image
-        source={require('@/assets/images/icanlogo.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <Image
+          source={require('@/assets/images/icanlogo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
-      <ThemedText type="title" style={styles.title}>
-        Profile
-      </ThemedText>
+        <ThemedText type="title" style={styles.title}>
+          Profile
+        </ThemedText>
 
-      <ScrollView style={styles.scrollView}>
         <ThemedView style={styles.formContainer}>
           <ThemedText style={styles.label}>Name:</ThemedText>
           <TextInput
@@ -112,17 +117,63 @@ export default function ProfileScreen() {
                 key={grade}
                 style={[
                   styles.gradeButton,
-                  userData.grade === grade && styles.selectedGrade,
+                  userData.grade === grade && styles.selectedButton,
                 ]}
                 onPress={() => isEditing && setUserData({ ...userData, grade })}
               >
                 <ThemedText
                   style={[
-                    styles.gradeButtonText,
-                    userData.grade === grade && styles.selectedGradeText,
+                    styles.selectorButtonText,
+                    userData.grade === grade && styles.selectedButtonText,
                   ]}
                 >
                   {grade}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </ThemedView>
+
+          <ThemedText style={styles.label}>Role:</ThemedText>
+          <ThemedView style={styles.selectorContainer}>
+            {(['Student', 'Parent', 'Teacher'] as UserRole[]).map((role) => (
+              <Pressable
+                key={role}
+                style={[
+                  styles.selectorButton,
+                  userData.role === role && styles.selectedButton,
+                ]}
+                onPress={() => isEditing && setUserData({ ...userData, role })}
+              >
+                <ThemedText
+                  style={[
+                    styles.selectorButtonText,
+                    userData.role === role && styles.selectedButtonText,
+                  ]}
+                >
+                  {role}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </ThemedView>
+
+          <ThemedText style={styles.label}>College Plan (Optional):</ThemedText>
+          <ThemedView style={styles.selectorContainer}>
+            {(['2-year college', '4-year college', 'Not decided'] as CollegePlan[]).map((plan) => (
+              <Pressable
+                key={plan}
+                style={[
+                  styles.selectorButton,
+                  userData.collegePlan === plan && styles.selectedButton,
+                ]}
+                onPress={() => isEditing && setUserData({ ...userData, collegePlan: plan })}
+              >
+                <ThemedText
+                  style={[
+                    styles.selectorButtonText,
+                    userData.collegePlan === plan && styles.selectedButtonText,
+                  ]}
+                >
+                  {plan}
                 </ThemedText>
               </Pressable>
             ))}
@@ -163,10 +214,13 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
   },
   scrollView: {
     flex: 1,
+  },
+  scrollContent: {
+    paddingTop: 60,
+    paddingBottom: 100,
   },
   logo: {
     width: '100%',
@@ -181,6 +235,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     padding: 20,
+    paddingBottom: 40,
   },
   label: {
     fontSize: 16,
@@ -193,25 +248,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
   },
-  gradeSelector: {
+  selectorContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginVertical: 16,
+    flexWrap: 'wrap',
+    gap: 10,
   },
-  gradeButton: {
+  selectorButton: {
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 20,
     backgroundColor: '#f0f0f0',
+    minWidth: 100,
+    alignItems: 'center',
   },
-  selectedGrade: {
+  selectedButton: {
     backgroundColor: '#0a7ea4',
   },
-  gradeButtonText: {
+  selectorButtonText: {
     fontSize: 16,
     fontWeight: '600',
   },
-  selectedGradeText: {
+  selectedButtonText: {
     color: '#fff',
   },
   buttonContainer: {
@@ -247,10 +306,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
+    marginBottom: 20,
   },
   logoutButtonText: {
     color: '#f44336',
     fontSize: 18,
     fontWeight: '600',
+  },
+  gradeSelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+  gradeButton: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    marginHorizontal: 5,
+    alignItems: 'center',
   },
 }); 

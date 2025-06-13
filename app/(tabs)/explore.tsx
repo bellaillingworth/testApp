@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, Image, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, View } from 'react-native';
 
 export type GradeLevel = '9th' | '10th' | '11th' | '12th';
 
@@ -301,7 +301,8 @@ export default function ChecklistScreen() {
   const [currentGrade, setCurrentGrade] = useState<GradeLevel>('9th');
   const [userName, setUserName] = useState<string>('');
   const [completedCount, setCompletedCount] = useState(0);
-  const [tasksByMonth, setTasksByMonth] = useState<{ [key: string]: Task[] }>({});
+  const [tasksByMonth, setTasksByMonth] = useState<{ [key: string]: Task[] }>(checklists['9th']);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Get ordered months in school year order (August through July)
   const getOrderedMonths = () => {
@@ -312,24 +313,36 @@ export default function ChecklistScreen() {
   // Load saved progress
   const loadSavedProgress = async (grade: GradeLevel) => {
     try {
+      setIsLoading(true);
       const savedProgress = await AsyncStorage.getItem(`checklist_progress_${grade}`);
       if (savedProgress) {
         const parsedProgress = JSON.parse(savedProgress) as { [key: string]: Task[] };
-        setTasksByMonth(parsedProgress);
+        // Ensure all months have data
+        const months = getOrderedMonths();
+        const validatedProgress = months.reduce((acc, month) => {
+          acc[month] = parsedProgress[month] || [];
+          return acc;
+        }, {} as { [key: string]: Task[] });
+        
+        setTasksByMonth(validatedProgress);
         
         // Calculate completed count from saved progress
-        const allTasks = Object.values(parsedProgress).flat();
+        const allTasks = Object.values(validatedProgress).flat();
         setCompletedCount(allTasks.filter(task => task.done).length);
       } else {
         // If no saved progress, initialize with default tasks
-        setTasksByMonth(checklists[grade]);
+        const defaultTasks = checklists[grade] || checklists['9th']; // Fallback to 9th grade if grade not found
+        setTasksByMonth(defaultTasks);
         setCompletedCount(0);
       }
     } catch (error) {
       console.error('Error loading saved progress:', error);
       // Fallback to default tasks if there's an error
-      setTasksByMonth(checklists[grade]);
+      const defaultTasks = checklists[grade] || checklists['9th'];
+      setTasksByMonth(defaultTasks);
       setCompletedCount(0);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -408,57 +421,65 @@ export default function ChecklistScreen() {
         <ThemedText style={styles.subtitle}>
           {currentGrade} Grade
         </ThemedText>
-        <ThemedView style={styles.progressContainer}>
-          <ThemedText style={styles.progressText}>
-            {completedCount} of {Object.values(tasksByMonth).flat().length} tasks completed
-          </ThemedText>
-          <View style={styles.progressBar}>
-            <View 
-              style={[
-                styles.progressFill,
-                { width: `${(completedCount / Object.values(tasksByMonth).flat().length) * 100}%` }
-              ]} 
-            />
-          </View>
-        </ThemedView>
-      </ThemedView>
-
-      <FlatList
-        contentContainerStyle={styles.listContainer}
-        data={getOrderedMonths()}
-        keyExtractor={(month) => month}
-        renderItem={({ item: month }) => (
-          <ThemedView style={styles.monthContainer}>
-            <ThemedText type="defaultSemiBold" style={styles.monthTitle}>
-              {month}
+        {!isLoading && (
+          <ThemedView style={styles.progressContainer}>
+            <ThemedText style={styles.progressText}>
+              {completedCount} of {Object.values(tasksByMonth).flat().length} tasks completed
             </ThemedText>
-            {tasksByMonth[month]?.map((task) => (
-              <Pressable
-                key={task.id}
-                onPress={() => toggleTask(month, task.id)}
+            <View style={styles.progressBar}>
+              <View 
                 style={[
-                  styles.taskContainer,
-                  task.done && styles.taskDone,
-                ]}
-              >
-                <View style={styles.checkboxContainer}>
-                  <Ionicons
-                    name={task.done ? 'checkbox' : 'square-outline'}
-                    size={24}
-                    color={task.done ? '#4caf50' : '#aaa'}
-                  />
-                </View>
-                <ThemedText
-                  style={[styles.taskText, task.done && styles.textDone]}
-                  numberOfLines={0}
-                >
-                  {task.text}
-                </ThemedText>
-              </Pressable>
-            ))}
+                  styles.progressFill,
+                  { width: `${(completedCount / Object.values(tasksByMonth).flat().length) * 100}%` }
+                ]} 
+              />
+            </View>
           </ThemedView>
         )}
-      />
+      </ThemedView>
+
+      {isLoading ? (
+        <ThemedView style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4caf50" />
+        </ThemedView>
+      ) : (
+        <FlatList
+          contentContainerStyle={styles.listContainer}
+          data={getOrderedMonths()}
+          keyExtractor={(month) => month}
+          renderItem={({ item: month }) => (
+            <ThemedView style={styles.monthContainer}>
+              <ThemedText type="defaultSemiBold" style={styles.monthTitle}>
+                {month}
+              </ThemedText>
+              {(tasksByMonth[month] || []).map((task) => (
+                <Pressable
+                  key={task.id}
+                  onPress={() => toggleTask(month, task.id)}
+                  style={[
+                    styles.taskContainer,
+                    task.done && styles.taskDone,
+                  ]}
+                >
+                  <View style={styles.checkboxContainer}>
+                    <Ionicons
+                      name={task.done ? 'checkbox' : 'square-outline'}
+                      size={24}
+                      color={task.done ? '#4caf50' : '#aaa'}
+                    />
+                  </View>
+                  <ThemedText
+                    style={[styles.taskText, task.done && styles.textDone]}
+                    numberOfLines={0}
+                  >
+                    {task.text}
+                  </ThemedText>
+                </Pressable>
+              ))}
+            </ThemedView>
+          )}
+        />
+      )}
     </ThemedView>
   );
 }
@@ -557,5 +578,10 @@ const styles = StyleSheet.create({
   textDone: {
     textDecorationLine: 'line-through',
     color: '#999',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

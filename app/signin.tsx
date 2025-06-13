@@ -6,34 +6,37 @@ import { Alert, Image, Pressable, ScrollView, StyleSheet, TextInput } from 'reac
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-export default function SignUpScreen() {
-  const [name, setName] = useState('');
+export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignUp = async () => {
-    if (!name || !email || !password) {
+  const handleSignIn = async () => {
+    if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
     try {
-      // Store only basic user data without preferences
-      const userData = {
-        name,
-        email,
-        password, // In a real app, this should be hashed
-        // Explicitly set these to undefined to ensure they're not set
-        grade: undefined,
-        role: undefined,
-        collegePlan: undefined
-      };
-      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      // Get user data
+      const userDataString = await AsyncStorage.getItem('userData');
+      if (!userDataString) {
+        Alert.alert('Error', 'No account found with this email');
+        return;
+      }
+
+      const userData = JSON.parse(userDataString);
       
-      // Navigate to preferences page
-      router.replace('/preferences');
+      // In a real app, you would verify the password here
+      // For now, we'll just check if the email matches
+      if (userData.email !== email) {
+        Alert.alert('Error', 'Invalid email or password');
+        return;
+      }
+
+      // Navigate to the main app
+      router.replace('/(tabs)/explore');
     } catch (error) {
-      Alert.alert('Error', 'Failed to create account');
+      Alert.alert('Error', 'Failed to sign in');
     }
   };
 
@@ -47,16 +50,8 @@ export default function SignUpScreen() {
         />
 
         <ThemedText type="title" style={styles.title}>
-          Create Account
+          Sign In
         </ThemedText>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          value={name}
-          onChangeText={setName}
-          placeholderTextColor="#666"
-        />
 
         <TextInput
           style={styles.input}
@@ -77,16 +72,16 @@ export default function SignUpScreen() {
           placeholderTextColor="#666"
         />
 
-        <Pressable style={styles.signUpButton} onPress={handleSignUp}>
-          <ThemedText style={styles.signUpButtonText}>Sign Up</ThemedText>
+        <Pressable style={styles.signInButton} onPress={handleSignIn}>
+          <ThemedText style={styles.signInButtonText}>Sign In</ThemedText>
         </Pressable>
 
         <Pressable 
           style={styles.switchButton}
-          onPress={() => router.replace('/signin')}
+          onPress={() => router.replace('/signup')}
         >
           <ThemedText style={styles.switchButtonText}>
-            Already have an account? Sign In
+            Don't have an account? Sign Up
           </ThemedText>
         </Pressable>
       </ScrollView>
@@ -123,14 +118,14 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
   },
-  signUpButton: {
+  signInButton: {
     backgroundColor: '#0a7ea4',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 10,
   },
-  signUpButtonText: {
+  signInButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',

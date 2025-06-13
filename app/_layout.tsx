@@ -24,13 +24,23 @@ export default function RootLayout() {
         const userData = await AsyncStorage.getItem('userData');
         const inAuthGroup = segments[0] === '(tabs)';
         const isPublicPage = ['career-planning', 'college-planning', 'financial-aid'].includes(segments[0]);
+        const isPreferencesPage = segments[0] === 'preferences';
 
         if (!userData && inAuthGroup && !isPublicPage) {
           // Redirect to signup if no user data and trying to access protected routes
           router.replace('/signup');
-        } else if (userData && !inAuthGroup && !isPublicPage) {
-          // Redirect to main app if user data exists and trying to access auth routes
-          router.replace('/(tabs)/explore');
+        } else if (userData && !inAuthGroup && !isPublicPage && !isPreferencesPage) {
+          // Parse user data to check if preferences are set
+          const parsedUserData = JSON.parse(userData);
+          const hasPreferences = parsedUserData.grade && parsedUserData.role;
+
+          if (hasPreferences) {
+            // Only redirect to explore if preferences are set
+            router.replace('/(tabs)/explore');
+          } else {
+            // Redirect to preferences if they're not set
+            router.replace('/preferences');
+          }
         }
       } catch (error) {
         console.error('Error checking user data:', error);
@@ -50,6 +60,8 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="signup" options={{ headerShown: false }} />
+        <Stack.Screen name="signin" options={{ headerShown: false }} />
+        <Stack.Screen name="preferences" options={{ headerShown: false }} />
         <Stack.Screen name="career-planning" options={{ headerShown: true }} />
         <Stack.Screen name="college-planning" options={{ headerShown: true }} />
         <Stack.Screen name="financial-aid" options={{ headerShown: true }} />
