@@ -401,7 +401,7 @@ export default function ChecklistScreen() {
   return (
     <ThemedView style={styles.container}>
       <Image
-        source={require('@/assets/images/icanLogo.png')}
+        source={require('@/assets/images/icanlogo.png')}
         style={styles.logo}
         resizeMode="contain"
       />
