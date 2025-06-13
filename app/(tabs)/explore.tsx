@@ -1,4 +1,3 @@
-import { Collapsible } from '@/components/Collapsible';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Ionicons } from '@expo/vector-icons';
@@ -304,20 +303,10 @@ export default function ChecklistScreen() {
   const [completedCount, setCompletedCount] = useState(0);
   const [tasksByMonth, setTasksByMonth] = useState<{ [key: string]: Task[] }>({});
 
-  // Get ordered months with current month first
+  // Get ordered months in school year order (August through July)
   const getOrderedMonths = () => {
-    const allMonths = ['August', 'September', 'October', 'November', 'December', 
-                      'January', 'February', 'March', 'April', 'May', 'June', 'July'];
-    const currentDate = new Date();
-    const currentMonth = allMonths[currentDate.getMonth()];
-    
-    // Reorder months to start with current month
-    const currentMonthIndex = allMonths.indexOf(currentMonth);
-    return [
-      currentMonth,
-      ...allMonths.slice(currentMonthIndex + 1),
-      ...allMonths.slice(0, currentMonthIndex)
-    ];
+    return ['August', 'September', 'October', 'November', 'December', 
+            'January', 'February', 'March', 'April', 'May', 'June', 'July'];
   };
 
   // Load saved progress
@@ -401,7 +390,7 @@ export default function ChecklistScreen() {
   return (
     <ThemedView style={styles.container}>
       <Image
-        source={require('@/assets/images/icanLogo.png')}
+        source={require('@/assets/images/icanlogo.png')}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -439,10 +428,10 @@ export default function ChecklistScreen() {
         data={getOrderedMonths()}
         keyExtractor={(month) => month}
         renderItem={({ item: month }) => (
-          <Collapsible 
-            title={month}
-            defaultOpen={month === getOrderedMonths()[0]} // Open current month by default
-          >
+          <ThemedView style={styles.monthContainer}>
+            <ThemedText type="defaultSemiBold" style={styles.monthTitle}>
+              {month}
+            </ThemedText>
             {tasksByMonth[month]?.map((task) => (
               <Pressable
                 key={task.id}
@@ -467,7 +456,7 @@ export default function ChecklistScreen() {
                 </ThemedText>
               </Pressable>
             ))}
-          </Collapsible>
+          </ThemedView>
         )}
       />
     </ThemedView>
@@ -527,6 +516,14 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
+  },
+  monthContainer: {
+    marginBottom: 24,
+  },
+  monthTitle: {
+    fontSize: 20,
+    marginBottom: 12,
+    paddingHorizontal: 4,
   },
   taskContainer: {
     flexDirection: 'row',

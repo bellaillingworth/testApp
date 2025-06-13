@@ -24,21 +24,21 @@ export default function CareerPlanningScreen() {
             <ThemedText type="subtitle" style={styles.sectionTitle}>🎯 Four Steps to Plan Your Future</ThemedText>
             
             <ThemedView style={styles.step}>
-              <ThemedText type="subtitle" style={styles.stepTitle}>1. Explore Careers</ThemedText>
+              <ThemedText type="subtitle" style={styles.stepTitle}>Explore Careers</ThemedText>
               <ThemedText style={styles.text}>
                 • Take assessments (like MyACT or RIASEC) to learn what careers fit your interests.
               </ThemedText>
             </ThemedView>
 
             <ThemedView style={styles.step}>
-              <ThemedText type="subtitle" style={styles.stepTitle}>2. Find Your Path</ThemedText>
+              <ThemedText type="subtitle" style={styles.stepTitle}>Find Your Path</ThemedText>
               <ThemedText style={styles.text}>
                 • Use results to explore career clusters (healthcare, tech, trades, etc.) and the training needed.
               </ThemedText>
             </ThemedView>
 
             <ThemedView style={styles.step}>
-              <ThemedText type="subtitle" style={styles.stepTitle}>3. Know Your Options</ThemedText>
+              <ThemedText type="subtitle" style={styles.stepTitle}>Know Your Options</ThemedText>
               <ThemedText style={styles.text}>
                 College isn't just 4 years. You can choose:{'\n'}
                 • Apprenticeships{'\n'}
@@ -49,7 +49,7 @@ export default function CareerPlanningScreen() {
             </ThemedView>
 
             <ThemedView style={styles.step}>
-              <ThemedText type="subtitle" style={styles.stepTitle}>4. Budget Smart</ThemedText>
+              <ThemedText type="subtitle" style={styles.stepTitle}>Budget Smart</ThemedText>
               <ThemedText style={styles.text}>
                 • Learn your starting salary.{'\n'}
                 • Don't borrow more than that.{'\n'}

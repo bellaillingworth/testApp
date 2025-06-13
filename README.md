@@ -34,9 +34,9 @@ cd [repository-name]
 ```
 
 2. Install dependencies:
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
 3. Firebase Setup:
    - Create a Firebase project at https://console.firebase.google.com/
@@ -46,9 +46,9 @@ npm install
    - Update Firebase configuration in `config/firebase.ts`
 
 4. Start the development server:
-```bash
+   ```bash
 npm start
-```
+   ```
 
 5. Run on iOS:
 ```bash

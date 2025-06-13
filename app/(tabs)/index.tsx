@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Linking, Pressable, StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -35,15 +34,11 @@ export default function HomeScreen() {
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
         <Image
-          source={require('@/assets/images/icanLogo.png')}
+          source={require('@/assets/images/icanlogo.png')}
           style={styles.image}
           contentFit='contain'
         />
       }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome to ICAN!</ThemedText>
-        <HelloWave />
-      </ThemedView>
 
       <ThemedView style={styles.section}>
         <ThemedText type="subtitle" style={styles.sectionTitle}>Career Planning</ThemedText>
@@ -99,11 +94,9 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   image: {
-    height: 200,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute'
+    height: 280,
+    width: 300,
+    alignSelf: 'center',
   },
   section: {
     marginBottom: 24,
