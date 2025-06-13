@@ -40,11 +40,6 @@ export default function HomeScreen() {
           contentFit='contain'
         />
       }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome to ICAN!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-
       <ThemedView style={styles.section}>
         <ThemedText type="subtitle" style={styles.sectionTitle}>Career Planning</ThemedText>
         <ResourceCard
